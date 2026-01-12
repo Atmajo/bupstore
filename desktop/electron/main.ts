@@ -32,7 +32,6 @@ function createWindow() {
   // Load the app
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173');
-    mainWindow.webContents.openDevTools();
   } else {
     // In production, files are in app.asar
     const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
