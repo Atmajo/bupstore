@@ -1,10 +1,16 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF.js worker
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+}
 
 interface FileUploadPanelProps {
   onFileSelect?: (file: File) => void;
-  onUpload?: (file: File) => Promise<void>;
+  onUpload?: (file: File, extractedText?: string) => Promise<void>;
   acceptedTypes?: string[];
 }
 
@@ -17,7 +23,25 @@ export default function FileUploadPanel({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [extracting, setExtracting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const extractTextFromPDF = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map((item: any) => item.str)
+        .join(' ');
+      fullText += pageText + '\n';
+    }
+
+    return fullText;
+  };
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -68,12 +92,22 @@ export default function FileUploadPanel({
       }, 200);
 
       try {
-        await onUpload(file);
+        let extractedText: string | undefined;
+
+        // Extract text from PDF client-side
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+          setExtracting(true);
+          extractedText = await extractTextFromPDF(file);
+          setExtracting(false);
+        }
+
+        await onUpload(file, extractedText);
         setProgress(100);
       } catch (error) {
         console.error('Upload failed:', error);
       } finally {
         clearInterval(interval);
+        setExtracting(false);
         setTimeout(() => {
           setUploading(false);
           setProgress(0);
@@ -173,7 +207,11 @@ export default function FileUploadPanel({
           </div>
           <div className="mt-4 flex justify-between items-center">
             <p className="text-xs text-[#9d9db9]">
-              {progress < 100 ? 'Scanning for 2FA patterns...' : 'Upload complete!'}
+              {extracting 
+                ? 'Extracting PDF text...' 
+                : progress < 100 
+                  ? 'Scanning for 2FA patterns...' 
+                  : 'Upload complete!'}
             </p>
           </div>
         </div>

@@ -44,24 +44,37 @@ function AddCodesPage() {
     }
   };
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (file: File, extractedText?: string) => {
     setError('');
     setSuccess('');
     setIsLoading(true);
 
     try {
-      const response = await apiClient.uploadFile<{ codes: string[] }>('/api/backup/upload', file);
-      
+      let text = extractedText;
+
+      // If no extracted text provided (for .txt files), read the file
+      if (!text) {
+        text = await file.text();
+      }
+
+      // Extract codes from the text
+      const codePattern = /(\d{4}\s*\d{4})/g;
+      const matches = text.match(codePattern) || [];
+      const extractedCodes = matches.map(code => code.replace(/\s+/g, ''));
+
+      if (extractedCodes.length === 0) {
+        throw new Error('No backup codes found in the file');
+      }
+
       // Pre-fill codes from uploaded file
-      const extractedCodes = response.codes.join('\n');
-      setCodes(extractedCodes);
+      setCodes(extractedCodes.join('\n'));
       
       // Switch to manual entry tab
       setActiveTab('manual');
       
-      setSuccess('File processed successfully! Please enter the domain name to save these codes.');
+      setSuccess(`File processed successfully! Found ${extractedCodes.length} backup codes. Please enter the domain name to save these codes.`);
     } catch (err: any) {
-      setError(err.message || 'Failed to upload file');
+      setError(err.message || 'Failed to process file');
     } finally {
       setIsLoading(false);
     }

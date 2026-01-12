@@ -1,4 +1,3 @@
-import { PDFParse } from 'pdf-parse';
 import path from 'path';
 
 export const extractCodes = async (file: Express.Multer.File): Promise<{ success: boolean, message: string, codes?: string[] }> => {
@@ -10,12 +9,16 @@ export const extractCodes = async (file: Express.Multer.File): Promise<{ success
         if (fileExtension === '.txt') {
             text = file.buffer.toString('utf8');
         } else if (fileExtension === '.pdf') {
-            const parser = new PDFParse({ data: file.buffer });
-            text = (await parser.getText()).text;
+            // PDF extraction is handled client-side using pdf.js
+            // This endpoint should receive the already-extracted text
+            return {
+                success: false,
+                message: "PDF files should be processed client-side. Please use the frontend upload which handles PDF extraction automatically."
+            };
         } else {
             return {
                 success: false,
-                message: "Unsupported file type. Only .txt and .pdf files are supported."
+                message: "Unsupported file type. Only .txt files are supported for server-side processing. PDF files are processed in the browser."
             };
         }
 
