@@ -17,14 +17,19 @@ final signupProvider = FutureProvider.family<void, (String, String, String)>(
   },
 );
 
+final googleSignInProvider = FutureProvider<void>((ref) async {
+  final authService = ref.watch(authServiceProvider);
+  await authService.signInWithGoogle();
+});
+
 final appleSignInProvider = FutureProvider<void>((ref) async {
   final authService = ref.watch(authServiceProvider);
   await authService.signInWithApple();
 });
 
-final faceIdAuthProvider = FutureProvider<bool>((ref) async {
+final biometricAuthProvider = FutureProvider<bool>((ref) async {
   final authService = ref.watch(authServiceProvider);
-  return await authService.authenticateWithFaceId();
+  return await authService.authenticateWithBiometric();
 });
 
 final logoutProvider = FutureProvider<void>((ref) async {

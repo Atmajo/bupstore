@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/theme.dart';
 import 'router.dart';
@@ -9,12 +9,11 @@ class BupStoreApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
-    final themeMode = ref.watch(themeModeProvider);
+    final isDarkMode = ref.watch(isDarkModeProvider);
 
-    return CupertinoApp.router(
+    return MaterialApp.router(
       title: 'BupStore',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: isDarkMode ? AppTheme.darkTheme : AppTheme.lightTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );

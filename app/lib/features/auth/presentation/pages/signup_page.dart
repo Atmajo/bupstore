@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/utils/validators.dart';
-import '../../../../widgets/glass_button.dart';
+import '../../../../widgets/material_button.dart';
+import '../../../../widgets/material_text_field.dart';
 import '../../../../config/theme.dart';
-import '../widgets/glass_text_field.dart';
 import '../providers.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -83,9 +83,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
+    return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
-      child: SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.spacingL),
           child: Column(
@@ -94,65 +94,53 @@ class _SignupPageState extends ConsumerState<SignupPage> {
               const SizedBox(height: 40),
               Text(
                 'Create Account',
-                style: TextStyle(
-                  fontSize: AppConstants.font2XL,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.getTextColor(context),
-                ),
+                style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 'Get started with BupStore',
-                style: TextStyle(
-                  fontSize: AppConstants.fontM,
-                  color: AppTheme.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
-              GlassTextField(
-                placeholder: 'Username',
+              MaterialTextField(
+                hintText: 'Username',
                 controller: _usernameController,
-                prefixIcon: CupertinoIcons.person,
+                prefixIcon: Icons.person_outline,
                 validator: Validators.validateUsername,
               ),
               const SizedBox(height: 16),
-              GlassTextField(
-                placeholder: 'Email',
+              MaterialTextField(
+                hintText: 'Email',
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                prefixIcon: CupertinoIcons.mail,
+                prefixIcon: Icons.mail_outline,
                 validator: Validators.validateEmail,
               ),
               const SizedBox(height: 16),
-              GlassTextField(
-                placeholder: 'Password',
+              MaterialTextField(
+                hintText: 'Password',
                 controller: _passwordController,
                 obscureText: true,
-                prefixIcon: CupertinoIcons.lock,
+                prefixIcon: Icons.lock_outline,
                 validator: Validators.validatePassword,
               ),
               const SizedBox(height: 24),
-              Row(
-                children: [
-                  CupertinoCheckbox(
-                    value: _agreeToTerms,
-                    onChanged: (value) {
-                      setState(() {
-                        _agreeToTerms = value ?? false;
-                      });
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      'I agree to terms and conditions',
-                      style: TextStyle(
-                        color: AppTheme.getTextColor(context),
-                      ),
-                    ),
-                  ),
-                ],
+              CheckboxListTile(
+                value: _agreeToTerms,
+                onChanged: (value) {
+                  setState(() {
+                    _agreeToTerms = value ?? false;
+                  });
+                },
+                title: Text(
+                  'I agree to terms and conditions',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
               ),
               const SizedBox(height: 24),
               if (_errorMessage != null)
@@ -160,14 +148,14 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: AppTheme.accentColor,
                       fontSize: AppConstants.fontS,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-              GlassButton(
+              MaterialButton(
                 label: 'Create Account',
                 onPressed: _handleSignup,
                 isLoading: _isLoading,
@@ -179,18 +167,16 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 children: [
                   Text(
                     'Already have an account? ',
-                    style: TextStyle(
-                      color: AppTheme.getTextColor(context),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   GestureDetector(
                     onTap: () => context.go('/login'),
                     child: Text(
                       'Sign in',
-                      style: TextStyle(
-                        color: AppTheme.primaryColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppTheme.primaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ),
                 ],

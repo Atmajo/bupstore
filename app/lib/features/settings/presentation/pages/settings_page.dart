@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../config/theme.dart';
 import '../../../../core/constants/app_constants.dart';
-import '../../../../widgets/glass_button.dart';
-import '../features/auth/providers.dart';
+import '../../../../widgets/material_button.dart';
+import '../../../auth/providers.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -19,17 +19,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
+    return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
-      navigationBar: CupertinoNavigationBar(
-        middle: Text(
-          'Settings',
-          style: TextStyle(
-            color: AppTheme.getTextColor(context),
-          ),
-        ),
+      appBar: AppBar(
+        title: const Text('Settings'),
       ),
-      child: SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.spacingL),
           child: Column(
@@ -38,87 +33,55 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               // Notifications Section
               Text(
                 'Notifications',
-                style: TextStyle(
-                  fontSize: AppConstants.fontM,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.getTextColor(context),
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Enable Notifications',
-                    style: TextStyle(
-                      color: AppTheme.getTextColor(context),
-                    ),
-                  ),
-                  CupertinoSwitch(
-                    value: _notificationsEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _notificationsEnabled = value;
-                      });
-                    },
-                    activeColor: AppTheme.primaryColor,
-                  ),
-                ],
+              SwitchListTile(
+                value: _notificationsEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _notificationsEnabled = value;
+                  });
+                },
+                title: const Text('Enable Notifications'),
+                activeColor: AppTheme.primaryColor,
               ),
               const SizedBox(height: 24),
 
               // Security Section
               Text(
                 'Security',
-                style: TextStyle(
-                  fontSize: AppConstants.fontM,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.getTextColor(context),
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Biometric Authentication',
-                    style: TextStyle(
-                      color: AppTheme.getTextColor(context),
-                    ),
-                  ),
-                  CupertinoSwitch(
-                    value: _biometricEnabled,
-                    onChanged: (value) {
-                      setState(() {
-                        _biometricEnabled = value;
-                      });
-                    },
-                    activeColor: AppTheme.primaryColor,
-                  ),
-                ],
+              SwitchListTile(
+                value: _biometricEnabled,
+                onChanged: (value) {
+                  setState(() {
+                    _biometricEnabled = value;
+                  });
+                },
+                title: const Text('Biometric Authentication'),
+                activeColor: AppTheme.primaryColor,
               ),
               const SizedBox(height: 24),
 
               // About Section
               Text(
                 'About',
-                style: TextStyle(
-                  fontSize: AppConstants.fontM,
-                  fontWeight: FontWeight.w600,
-                  color: AppTheme.getTextColor(context),
-                ),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
               Text(
                 'App Version: 1.0.0',
-                style: TextStyle(
-                  color: AppTheme.textSecondary,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppTheme.textSecondary,
+                    ),
               ),
               const SizedBox(height: 24),
 
               // Logout Section
-              GlassButton(
+              MaterialButton(
                 label: 'Sign Out',
                 onPressed: () async {
                   await ref.read(logoutProvider.future);

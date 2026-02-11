@@ -95,12 +95,42 @@ class AuthService {
     }
   }
 
-  Future<bool> authenticateWithFaceId() async {
+  Future<void> signInWithGoogle() async {
+    try {
+      final googleUser = await _googleSignIn.signIn();
+      if (googleUser == null) return;
+
+      final googleAuth = await googleUser.authentication;
+
+      final response = await _apiService.post<Map<String, dynamic>>(
+        '/auth/google-signin',
+        data: {
+          'idToken': googleAuth.idToken,
+          'accessToken': googleAuth.accessToken,
+          'email': googleUser.email,
+        },
+      );
+
+      final token = response['token'] as String;
+      final userId = response['userId'] as String;
+
+      await _authStorage.saveToken(token);
+      await _authStorage.saveUserInfo(userId, googleUser.email);
+
+      AppLogger.info('Google Sign-In successful');
+    } catch (e) {
+      AppLogger.error('Google Sign-In failed: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> authenticateWithBiometric() async {
     try {
       final canAuthenticateWithBiometrics =
           await _localAuth.canCheckBiometrics;
       final canAuthenticate =
-          canAuthenticateWithBiometrics || await _localAuth.deviceSupportsPassword;
+          canAuthenticateWithBiometrics ||
+          await _localAuth.deviceSupportsPassword;
 
       if (!canAuthenticate) {
         AppLogger.warning('Device does not support biometric authentication');
@@ -120,7 +150,7 @@ class AuthService {
       AppLogger.error('Biometric authentication not available');
       return false;
     } on Exception catch (e) {
-      AppLogger.error('Face ID authentication failed: $e');
+      AppLogger.error('Biometric authentication failed: $e');
       return false;
     }
   }
@@ -129,6 +159,7 @@ class AuthService {
     try {
       await _apiService.post('/auth/logout');
       await _authStorage.clearAll();
+      await _googleSignIn.signOut();
       AppLogger.info('Logout successful');
     } catch (e) {
       AppLogger.error('Logout failed: $e');

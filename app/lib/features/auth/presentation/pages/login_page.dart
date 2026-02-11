@@ -93,107 +93,121 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  Future<void> _handleGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      await ref.read(googleSignInProvider.future);
+      if (mounted) {
+        context.go('/dashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Google Sign-In failed. Please try again.';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
+    return Scaffold(
       backgroundColor: AppTheme.getBackgroundColor(context),
-      child: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              padding: const EdgeInsets.all(AppConstants.spacingL),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: 40),
-                  Text(
-                    'Welcome Back',
-                    style: TextStyle(
-                      fontSize: AppConstants.font2XL,
-                      fontWeight: FontWeight.w700,
-                      color: AppTheme.getTextColor(context),
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Sign in to your account',
-                    style: TextStyle(
-                      fontSize: AppConstants.fontM,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppConstants.spacingL),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 40),
+              Text(
+                'Welcome Back',
+                style: Theme.of(context).textTheme.headlineLarge,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Sign in to your account',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppTheme.textSecondary,
                     ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 48),
+              MaterialTextField(
+                hintText: 'Email',
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: Icons.mail_outline,
+                validator: Validators.validateEmail,
+              ),
+              const SizedBox(height: 16),
+              MaterialTextField(
+                hintText: 'Password',
+                controller: _passwordController,
+                obscureText: true,
+                prefixIcon: Icons.lock_outline,
+                validator: Validators.validatePassword,
+              ),
+              const SizedBox(height: 24),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(
+                      color: AppTheme.accentColor,
+                      fontSize: AppConstants.fontS,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 48),
-                  GlassTextField(
-                    placeholder: 'Email',
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: CupertinoIcons.mail,
-                    validator: Validators.validateEmail,
+                ),
+              MaterialButton(
+                label: 'Sign In',
+                onPressed: _handleLogin,
+                isLoading: _isLoading,
+                minimumSize: const Size(double.infinity, 54),
+              ),
+              const SizedBox(height: 16),
+              MaterialButton(
+                label: 'Sign in with Google',
+                onPressed: _handleGoogleSignIn,
+                icon: Icons.g_mobiledata,
+                isLoading: _isLoading,
+                minimumSize: const Size(double.infinity, 54),
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 16),
-                  GlassTextField(
-                    placeholder: 'Password',
-                    controller: _passwordController,
-                    obscureText: true,
-                    prefixIcon: CupertinoIcons.lock,
-                    validator: Validators.validatePassword,
-                  ),
-                  const SizedBox(height: 24),
-                  if (_errorMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(
-                        _errorMessage!,
-                        style: const TextStyle(
-                          color: AppTheme.accentColor,
-                          fontSize: AppConstants.fontS,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  GlassButton(
-                    label: 'Sign In',
-                    onPressed: _handleLogin,
-                    isLoading: _isLoading,
-                    minimumSize: const Size(double.infinity, 54),
-                  ),
-                  const SizedBox(height: 16),
-                  GlassButton(
-                    label: 'Sign in with Apple',
-                    onPressed: _handleAppleSignIn,
-                    icon: CupertinoIcons.apple_logo,
-                    isLoading: _isLoading,
-                    minimumSize: const Size(double.infinity, 54),
-                    backgroundColor: const Color(0xFF000000),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Don't have an account? ",
-                        style: TextStyle(
-                          color: AppTheme.getTextColor(context),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.go('/signup'),
-                        child: Text(
-                          'Sign up',
-                          style: TextStyle(
+                  GestureDetector(
+                    onTap: () => context.go('/signup'),
+                    child: Text(
+                      'Sign up',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: AppTheme.primaryColor,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

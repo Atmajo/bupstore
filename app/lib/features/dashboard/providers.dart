@@ -1,14 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/api_service.dart';
 
-final apiServiceProvider = Provider((ref) {
-  return ApiService(ref.watch(authStorageProvider));
-});
-
-final authStorageProvider = Provider((ref) {
-  throw UnimplementedError();
-});
-
 final getDomainsFuture = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final apiService = ref.watch(apiServiceProvider);
   try {
