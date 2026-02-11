@@ -1,0 +1,112 @@
+flutter_app/
+├── pubspec.yaml                       # Dependencies & version
+├── pubspec.lock                       # Locked dependency versions
+├── app.json                           # App metadata
+├── .flutter_version                   # Flutter version
+├── .gitignore                         # Git ignore rules
+├── .env.example                       # Environment template
+│
+├── README.md                          # Project overview
+├── QUICKSTART.md                      # Quick start guide
+├── IMPLEMENTATION_GUIDE.md            # Detailed implementation
+├── COMPILATION_GUIDE.md               # Build guide
+│
+├── lib/
+│   ├── main.dart                      # Application entry point
+│   ├── app.dart                       # App configuration
+│   ├── router.dart                    # GoRouter setup
+│   ├── constants.dart                 # Global constants
+│   │
+│   ├── config/
+│   │   ├── theme.dart                 # Color & typography scheme
+│   │   ├── app_config.dart            # API configuration
+│   │   ├── configuration.dart         # App configuration manager
+│   │   └── configuration_model.dart   # Configuration data model
+│   │
+│   ├── core/
+│   │   ├── constants/
+│   │   │   ├── app_constants.dart     # UI constants (spacing, sizes)
+│   │   │   └── endpoints.dart         # API endpoints
+│   │   ├── exceptions/
+│   │   │   └── app_exceptions.dart    # Custom exceptions
+│   │   └── utils/
+│   │       ├── validators.dart        # Input validation
+│   │       ├── logger.dart            # Debug logging
+│   │       └── extensions.dart        # Dart extensions
+│   │
+│   ├── models/
+│   │   ├── models.dart                # Data models (User, Domain, Code)
+│   │   └── hive_models.dart           # Local database models
+│   │
+│   ├── services/
+│   │   ├── api_service.dart           # HTTP client with interceptors
+│   │   ├── auth_storage.dart          # Secure token storage
+│   │   ├── hive_service.dart          # Local database service
+│   │   ├── notification_service.dart  # Firebase notifications
+│   │   └── connectivity_service.dart  # Network status monitoring
+│   │
+│   ├── providers/
+│   │   ├── app_provider.dart          # Global app state
+│   │   └── [feature_providers].dart   # Feature-specific providers
+│   │
+│   ├── widgets/
+│   │   ├── glass_container.dart       # Glassmorphism base container
+│   │   ├── glass_button.dart          # Glass button with animation
+│   │   ├── glass_text_field.dart      # Text input with validation
+│   │   ├── glass_widgets.dart         # Progress bar & counter
+│   │   ├── glass_container.dart       # Basic glass container
+│   │   ├── bottom_tab_bar.dart        # Floating bottom navigation
+│   │   ├── app_navbar.dart            # Top navigation bar
+│   │   ├── loading_overlay.dart       # Loading indicator overlay
+│   │   ├── dialog_helpers.dart        # Dialog utilities
+│   │   ├── empty_and_error_widgets.dart # Empty/error states
+│   │   └── snackbar_helper.dart       # Toast notifications
+│   │
+│   └── features/
+│       ├── auth/                      # Authentication feature
+│       │   ├── data/
+│       │   │   └── auth_service.dart  # Auth business logic
+│       │   ├── presentation/
+│       │   │   ├── pages/
+│       │   │   │   ├── login_page.dart     # Login screen
+│       │   │   │   └── signup_page.dart    # Signup screen
+│       │   │   └── widgets/
+│       │   │       └── glass_text_field.dart # Auth input field
+│       │   └── providers.dart          # Auth state management
+│       │
+│       ├── dashboard/                 # Dashboard feature
+│       │   ├── presentation/
+│       │   │   ├── pages/
+│       │   │   │   └── dashboard_page.dart # Home screen
+│       │   │   └── widgets/
+│       │   │       └── domain_grid.dart    # Domain grid widget
+│       │   └── providers.dart          # Dashboard state
+│       │
+│       ├── vault/                     # Vault management feature
+│       │   ├── presentation/
+│       │   │   ├── pages/
+│       │   │   │   ├── vault_list_page.dart    # Vault list
+│       │   │   │   └── vault_detail_page.dart  # Vault detail
+│       │   │   └── widgets/
+│       │   │       └── code_card.dart  # Code display card
+│       │   └── providers.dart          # Vault state
+│       │
+│       ├── settings/                  # Settings feature
+│       │   └── presentation/
+│       │       └── pages/
+│       │           └── settings_page.dart # Settings screen
+│       │
+│       └── shared/                    # Shared across features
+│           └── providers.dart         # Shared providers
+│
+│
+├── ios/                               # iOS specific code
+│   ├── Podfile                        # CocoaPods configuration
+│   ├── Runner/
+│   │   └── Info.plist                 # iOS app configuration
+│   ├── Runner.xcodeproj/              # Xcode project
+│   └── Pods/                          # CocoaPods dependencies
+│
+└── test/                              # Test files
+    └── fixtures/
+        └── test_fixtures.dart         # Mock data for testing
