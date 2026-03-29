@@ -8,6 +8,7 @@ import Sidebar from '@/components/Sidebar';
 import CodeCard from '@/components/CodeCard';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Menu } from "lucide-react";
 
 function ViewCodesPage() {
   const params = useParams();
@@ -15,11 +16,12 @@ function ViewCodesPage() {
   const { domains } = useDomains();
   const [searchQuery, setSearchQuery] = useState('');
   const [showCodes, setShowCodes] = useState(true);
-  
+  const [open, setOpen] = useState(false);
+
   const domain = domains.find((d) => d.id === domainId);
 
   const { codes, isLoading: codesLoading, updateCodeStatus } = useCodes(domainId);
-  
+
   const filteredCodes = codes.filter((code) =>
     code.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -38,7 +40,7 @@ function ViewCodesPage() {
   return (
     <div className="bg-background-dark text-white min-h-screen">
       <div className="flex h-screen overflow-hidden">
-        <Sidebar />
+        <Sidebar open={open} onOpenChange={setOpen} />
 
         <main className="flex-1 flex flex-col overflow-y-auto relative">
           {/* Background Glows */}
@@ -48,9 +50,14 @@ function ViewCodesPage() {
           {/* Breadcrumbs */}
           <header className="px-8 py-6 flex flex-col gap-6 relative z-10">
             <nav className="flex items-center gap-2 text-sm">
-              <Link href="/vault" className="text-slate-400 hover:text-primary transition-colors">
-                Domains
-              </Link>
+              <div className="flex justify-center items-center gap-2">
+                <button onClick={() => setOpen(true)} className="text-slate-400 hover:text-primary transition-colors">
+                  <Menu className='h-5 w-5' />
+                </button>
+                <Link href="/vault" className="text-slate-400 hover:text-primary transition-colors">
+                  Domains
+                </Link>
+              </div>
               <span className="text-slate-400">/</span>
               <span className="text-white font-medium">{domain?.name || 'Loading...'}</span>
             </nav>
@@ -148,9 +155,9 @@ function ViewCodesPage() {
             ) : filteredCodes.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filteredCodes.map((code) => (
-                  <CodeCard 
-                    key={code.id} 
-                    code={code} 
+                  <CodeCard
+                    key={code.id}
+                    code={code}
                     onCopy={() => handleCopyCode(code.id)}
                   />
                 ))}

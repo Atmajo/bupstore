@@ -21,7 +21,7 @@ function VaultPage() {
       <div className="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
         <Navbar />
 
-        <main className="px-4 md:px-20 lg:px-40 flex flex-1 justify-center py-10">
+        <main className="ml-4 md:ml-20 lg:ml-40 flex justify-center py-10">
           <div className="flex flex-col max-w-[1024px] flex-1">
             {/* Page Heading */}
             <div className="flex flex-wrap items-end justify-between gap-4 p-4 mb-6">
