@@ -44,25 +44,16 @@ function AddCodesPage() {
     }
   };
 
-  const handleFileUpload = async (file: File, extractedText?: string) => {
+  const handleFileUpload = async (file: File) => {
     setError('');
     setSuccess('');
     setIsLoading(true);
 
     try {
-      let text = extractedText;
+      const response = await apiClient.uploadFile<{ codes: string[] }>('/api/backup/upload', file);
+      const extractedCodes = response.codes;
 
-      // If no extracted text provided (for .txt files), read the file
-      if (!text) {
-        text = await file.text();
-      }
-
-      // Extract codes from the text
-      const codePattern = /(\d{4}\s*\d{4})/g;
-      const matches = text.match(codePattern) || [];
-      const extractedCodes = matches.map(code => code.replace(/\s+/g, ''));
-
-      if (extractedCodes.length === 0) {
+      if (!extractedCodes || extractedCodes.length === 0) {
         throw new Error('No backup codes found in the file');
       }
 

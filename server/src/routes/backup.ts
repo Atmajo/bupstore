@@ -52,7 +52,7 @@ router.get('/', async (_req: Request, res: Response) => {
     });
 
     // Decode the codes
-    const decodedDomains = domains.map(domain => ({
+    const decodedDomains = domains.map((domain: typeof domains[number]) => ({
       ...domain,
       codes: decodeCodes(domain.codes, user!.userJWT!)
     }));

@@ -1,4 +1,5 @@
 import path from 'path';
+import { PDFParse } from 'pdf-parse';
 
 export const extractCodes = async (file: Express.Multer.File): Promise<{ success: boolean, message: string, codes?: string[] }> => {
     try {
@@ -9,16 +10,14 @@ export const extractCodes = async (file: Express.Multer.File): Promise<{ success
         if (fileExtension === '.txt') {
             text = file.buffer.toString('utf8');
         } else if (fileExtension === '.pdf') {
-            // PDF extraction is handled client-side using pdf.js
-            // This endpoint should receive the already-extracted text
-            return {
-                success: false,
-                message: "PDF files should be processed client-side. Please use the frontend upload which handles PDF extraction automatically."
-            };
+            const parser = new PDFParse({ data: file.buffer });
+            const result = await parser.getText();
+            text = result.text;
+            await parser.destroy();
         } else {
             return {
                 success: false,
-                message: "Unsupported file type. Only .txt files are supported for server-side processing. PDF files are processed in the browser."
+                message: "Unsupported file type. Only .txt and .pdf files are supported."
             };
         }
 
@@ -26,14 +25,11 @@ export const extractCodes = async (file: Express.Multer.File): Promise<{ success
             return { success: false, message: "File is empty or contains no text" };
         }
 
-        const codePattern = /(\d{4}\s+\d{4})/g;
-        const codes: string[] = [];
-
-        let match;
-        while ((match = codePattern.exec(text)) !== null) {
-            const code = match[1].replace(/\s+/g, '');
-            codes.push(code);
-        }
+        // Split text into lines and extract non-empty lines as codes
+        const codes: string[] = text
+            .split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
 
         if (codes.length === 0) {
             return {
